@@ -134,8 +134,34 @@ class RegistrationScreenState extends State<RegistrationScreen> {
                       child: const Text('EXCLUIR'),
                       onPressed: () async {
                         if (widget.tennis != null) {
-                          await dbHelper.deleteTennis(widget.tennis!.id!);
-                          Navigator.pop(context, true);
+                          bool? confirmDelete = await showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text('Confirmar Exclusão'),
+                                content: const Text('Você tem certeza que deseja excluir este tênis?'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: const Text('CANCELAR'),
+                                    onPressed: () {
+                                      Navigator.of(context).pop(false);
+                                    },
+                                  ),
+                                  TextButton(
+                                    child: const Text('CONFIRMAR'),
+                                    onPressed: () {
+                                      Navigator.of(context).pop(true);
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+
+                          if (confirmDelete == true) {
+                            await dbHelper.deleteTennis(widget.tennis!.id!);
+                            Navigator.pop(context, true);
+                          }
                         }
                       },
                     ),
